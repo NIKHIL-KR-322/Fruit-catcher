@@ -1,86 +1,354 @@
 # Fruit Catcher Repair Lab
 
-This project is a 2D arcade catch-and-dodge game using **Pygame**. It introduces students to sprite collision checking, continuous horizontal movement, falling entity lifecycle management, life counters, and game state transitions within an object-oriented codebase.
+A 2D arcade-style Fruit Catcher game developed using **Python and Pygame**.
+
+The project was provided as a working game containing one deliberate bug and three optional enhancement tasks. The game was analyzed, repaired, tested, and enhanced using an LLM as a debugging and pair-programming assistant.
+
 ---
 
-## What's Provided
+## Project Overview
 
-A working Fruit Catcher game with:
+The player controls a basket at the bottom of the screen and attempts to catch falling fruits.
 
-- A controllable basket at the bottom with clamped screen-edge boundaries
-- Falling fruits (Apples, Oranges, Grapes) that spawn at randomized x-coordinates with independent falling speeds
-- Keyboard controls supporting both `A` / `D` and `Left` / `Right` arrow keys
-- Live score and lives HUD display
-- A Game Over screen overlay with restart functionality
+### Normal Fruits
 
-It has **one deliberate bug** and **three optional features** left as tasks to implement. You are expected to **analyze**, **interact with an AI assistant**, and **complete/fix** the game to make it fully functional and more interesting.
+The game contains:
 
-### **Use an LLM (e.g. ChatGPT or Claude) as your debugging and pair-programming partner for this lab.**
+* Apple
+* Orange
+* Grape
+
+Successfully catching a normal fruit increases the score by **1**.
+
+### Hazard Fruit
+
+A hazard item occasionally appears instead of a normal fruit.
+
+The hazard is displayed as a dark/black object with green markings.
+
+Catching a hazard deducts **1 life** and does not increase the score.
+
 ---
 
-## Getting Started
+## Features
 
-### Setup
+* Basket movement using keyboard controls
+* `A` / `D` keyboard controls
+* Left / Right arrow controls
+* Random fruit spawning
+* Random fruit falling speeds
+* Score tracking
+* Three-life system
+* Game Over state
+* Restart functionality
+* Hazard fruits
+* Dynamic difficulty progression
+* Increasing fruit falling speed
+* Decreasing fruit spawn delay
+* Fruit splash particle effects
 
-1. Make sure you have Python 3.10+ installed.
-2. Install dependencies:
+---
+
+# Tasks Completed
+
+## Task 1 — Fix Floor Miss Scoring and Life Deduction
+
+### Original Problem
+
+When a fruit reached the bottom of the screen, the original code incorrectly executed:
+
+```python
+self.score += 1
+```
+
+This caused the score to increase even when the player missed a fruit.
+
+The original game also did not correctly deduct lives when a fruit was missed.
+
+### Modification
+
+The miss logic was changed so that a missed fruit:
+
+* Decreases the player's lives by 1.
+* Does not increase the score.
+* Is removed from the active fruit list.
+* Changes the game state to `GAME_OVER` when lives reach 0.
+
+### Result
+
+```text
+Catch fruit → Score +1
+
+Miss fruit → Life -1
+```
+
+---
+
+# Task 2 — Rotten Fruit / Hazard Bomb
+
+A hazard item was added to the `Fruit` class.
+
+The hazard is randomly generated with a probability of approximately **15%**.
+
+Normal fruits retain their original colors, while hazards are displayed differently so that the player can identify and avoid them.
+
+### Hazard Behavior
+
+When a hazard collides with the basket:
+
+```text
+Lives -1
+Score unchanged
+```
+
+If all lives are lost:
+
+```text
+GAME_OVER
+```
+
+This introduces a dodge mechanic to the game.
+
+---
+
+# Task 3 — Dynamic Falling Speed Escalation
+
+The game difficulty now increases as the player's score increases.
+
+The speed bonus is calculated based on the current score:
+
+```python
+speed_bonus = min(self.score * 0.15, 3.0)
+```
+
+The spawn delay is also reduced as the score increases:
+
+```python
+self.spawn_delay = max(
+    300,
+    750 - self.score * 15
+)
+```
+
+Therefore:
+
+```text
+Score increases
+       ↓
+Fruit speed increases
+       ↓
+Spawn delay decreases
+       ↓
+More challenging gameplay
+```
+
+A maximum speed bonus and minimum spawn delay are used to prevent the game from becoming excessively fast.
+
+---
+
+# Task 4 — Fruit Splash Particle Effects
+
+A lightweight particle system was added to the game engine.
+
+When a normal fruit is caught or reaches the floor, small colored particles are generated.
+
+Each particle has:
+
+* Position
+* Horizontal velocity
+* Vertical velocity
+* Lifetime
+* Fruit color
+
+Particles are updated every frame and removed after their lifetime expires.
+
+A small gravity effect is also applied to make the particles move naturally.
+
+### Particle Flow
+
+```text
+Fruit caught / missed
+        ↓
+Create particles
+        ↓
+Particles move outward
+        ↓
+Gravity affects particles
+        ↓
+Particles disappear
+```
+
+The particle color matches the fruit that generated the splash.
+
+---
+
+# Game Controls
+
+| Key | Action                  |
+| --- | ----------------------- |
+| `A` | Move basket left        |
+| `D` | Move basket right       |
+| `←` | Move basket left        |
+| `→` | Move basket right       |
+| `R` | Restart after Game Over |
+
+---
+
+# Game Rules
+
+### Catching a Normal Fruit
+
+```text
+Normal fruit + Basket
+        ↓
+Score +1
+        ↓
+Fruit removed
+        ↓
+Particle effect
+```
+
+### Missing a Fruit
+
+```text
+Fruit reaches floor
+        ↓
+Lives -1
+        ↓
+Fruit removed
+        ↓
+Particle effect
+```
+
+### Catching a Hazard
+
+```text
+Hazard + Basket
+        ↓
+Lives -1
+        ↓
+Score unchanged
+        ↓
+Hazard removed
+```
+
+### Losing All Lives
+
+```text
+Lives = 0
+    ↓
+GAME OVER
+    ↓
+Game updates stop
+    ↓
+Press R to restart
+```
+
+---
+
+# Restart Behavior
+
+After Game Over, pressing `R` resets:
+
+```text
+Score → 0
+Lives → 3
+Fruits → Cleared
+Particles → Cleared
+Game State → PLAYING
+```
+
+---
+
+# Installation
+
+## Requirements
+
+* Python 3.10 or later
+* Pygame
+
+Install Pygame:
 
 ```bash
 pip install pygame
 ```
 
-3. Run the game:
+---
+
+# Running the Game
+
+Open a terminal in the project directory:
 
 ```bash
 python main.py
 ```
 
-**Controls:** Use A / D or Left / Right arrows to slide the basket. Press R to restart after Game Over.
+If Python is installed but `python` is not available in PATH, the Python executable can also be used directly.
 
-## Tasks to Complete
-
-Each task must be completed using an iterative process involving LLM suggestions and your critical code review.
-
-### Task 1: Fix the floor miss scoring and life deduction bug
-
-Allowing fruits to fall past the bottom of the screen currently increments the player's score instead of penalizing them. In game_engine.update(), the miss check executes self.score += 1 when fruit.is_missed(self.height) is true. Furthermore, self.lives is never decremented when a fruit is dropped, meaning the player cannot lose lives. Fix this block so that missing a fruit decreases self.lives by 1 (and triggers self.game_state = "GAME_OVER" when self.lives <= 0), ensuring points are only earned on successful basket catches.
-
-### Task 2: Implement rotten fruit / hazard bombs
-
-Introduce a hazard item into Fruit (e.g., a black or green spiked bomb/rotten fruit) that occasionally spawns instead of regular fruit. If caught in the basket, deduct a life or penalize points immediately, adding a dodge dynamic to the catching gameplay.
- 
-### Task 3: Implement dynamic falling speed escalation
-
-Fruits currently drop at constant randomized speed bands throughout the entire session. In game_engine, add dynamic difficulty progression: as the player's score increases, gradually shorten self.spawn_delay and increase the baseline fall speed of newly spawned fruits.
-
-### Task 4: Implement fruit splash particle effects
-
-Catching or dropping a fruit currently removes it instantly from the list. Create a lightweight particle emitter system that bursts tiny colored circular droplets matching the fruit's color whenever a fruit hits the basket rim or splatters against the floor.
 ---
 
-## Expected Behavior
+# Project Structure
 
-- Sliding the basket catches falling fruits, removing them and awarding +1 point per catch.
-- Missing a fruit and letting it touch the ground deducts 1 life without increasing the score.
-- Losing all 3 lives displays the GAME OVER banner and freezes further updates.
-- Pressing R after losing resets the score, restores lives to 3, and clears lingering fruits.
-
-## Folder Structure
-
-```
-fruit_catcher/
+```text
+Fruit-catcher/
+│
 ├── game/
 │   ├── basket.py
 │   ├── fruit.py
 │   └── game_engine.py
+│
 ├── main.py
-└── README.md
+├── README.md
+└── DELIVERABLES.md
 ```
 
-## Submission Checklist
+---
 
-Submission is only the following three things:
+# Testing
 
-- [] A 10-second video of gameplay **before** your changes, showing the bug/broken behavior
-- [] A 10-second video of gameplay **after** your changes, showing the bug fixed and the new features working
-- [] The Chat/LLM used page link, with the complete chat history
+The game was executed locally and tested during gameplay.
+
+The following were verified:
+
+* Normal fruit catching
+* Score increase after successful catches
+* Life deduction after missed fruits
+* Hazard fruit behavior
+* Hazard life deduction
+* Game Over behavior
+* Restart functionality
+* Dynamic fruit speed
+* Dynamic spawn delay
+* Particle splash effects
+
+---
+
+# Development Process
+
+The original repository was cloned locally before modifications were made.
+
+A separate working copy was used for the repairs and enhancements.
+
+The implementation was developed iteratively with the help of an LLM for debugging and pair programming, followed by local testing and review.
+
+---
+
+# Submission Deliverables
+
+The submission consists of:
+
+1. **Before-change gameplay video** — approximately 10 seconds.
+2. **After-change gameplay video** — approximately 10 seconds.
+3. **LLM / Chat history link** showing the development and debugging process.
+
+See [`DELIVERABLES.md`](DELIVERABLES.md) for the submission details.
+
+---
+
+# Repository
+
+Student repository:
+
+`NIKHIL-KR-322/Fruit-catcher`
+
+The original source repository was used as the starting point, while the completed work was maintained in the student's separate repository.
