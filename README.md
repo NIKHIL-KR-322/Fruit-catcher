@@ -323,16 +323,6 @@ The following were verified:
 
 ---
 
-# Development Process
-
-The original repository was cloned locally before modifications were made.
-
-A separate working copy was used for the repairs and enhancements.
-
-The implementation was developed iteratively with the help of an LLM for debugging and pair programming, followed by local testing and review.
-
----
-
 # Submission Deliverables
 
 The submission consists of:
@@ -340,8 +330,7 @@ The submission consists of:
 1. **Before-change gameplay video** — approximately 10 seconds.
 2. **After-change gameplay video** — approximately 10 seconds.
 3. **LLM / Chat history link** showing the development and debugging process.
-
-See [`DELIVERABLES.md`](DELIVERABLES.md) for the submission details.
+LLM LINK:  https://chatgpt.com/share/6abd0719-1920-83ee-b433-f31a09cb2420
 
 ---
 
